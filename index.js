@@ -27,7 +27,6 @@ async function run(){
             const query = {};
             const cursor = serviceCollection.find(query);
             const services = await cursor.limit(3).toArray();
-            console.log(services);
             res.send(services);
         })
 
@@ -87,6 +86,32 @@ async function run(){
                 }
             }
             const result = await reviewCollection.updateOne(query, updateDoc);
+            res.send(result);
+        })
+
+        // Review Update api
+        app.get('/review/:id',async(req,res)=>{
+            const id = req.params.id;
+            const query = { _id: ObjectId(id)};
+            const review = await reviewCollection.findOne(query);
+            res.send(review);
+        })
+
+        // Replace Update value
+        app.put('/review/:id', async(req, res) =>{
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id)};
+            const user = req.body;
+            const option ={upsert: true};
+            const updatedUser = {
+                $set: {
+                    username : user.name,
+                    email : user.email,
+                    message : user.message
+                }
+            }
+            console.log(updatedUser);
+            const result = await reviewCollection.updateOne(filter, updatedUser, option);
             res.send(result);
         })
 
