@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 const app = express();
@@ -17,11 +18,20 @@ const uri = `mongodb+srv://${process.env.TE_USER}:${process.env.TE_USER_PASS}@cl
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 
+
 async function run(){
     try{
         const serviceCollection = client.db('tourExpert').collection('services');
         const reviewCollection = client.db('tourExpert').collection('review');
         const blogCollection = client.db('tourExpert').collection('blogs');
+
+
+        // JWT Token Api
+        app.post('/jwt',(req, res) => {
+            const user = req.body;
+            const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '10h'});
+            res.send({token})
+        })
 
         app.get('/services',async(req,res)=>{
             const query = {};
@@ -52,7 +62,7 @@ async function run(){
         })
 
         // review api
-        app.get('/review',async(req,res)=>{
+        app.get('/review', async(req,res)=>{
             let query = {};
             if(req.query.email){
                 query = {
