@@ -122,7 +122,7 @@ async function run(){
             res.send(result);
         })
 
-        // blog api
+        // Blog Post API
         app.get('/blogs',async(req,res)=>{
             const query = {};
             const cursor = blogCollection.find(query);
