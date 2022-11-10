@@ -21,11 +21,13 @@ async function run(){
     try{
         const serviceCollection = client.db('tourExpert').collection('services');
         const reviewCollection = client.db('tourExpert').collection('review');
+        const blogCollection = client.db('tourExpert').collection('blogs');
 
         app.get('/services',async(req,res)=>{
             const query = {};
             const cursor = serviceCollection.find(query);
             const services = await cursor.limit(3).toArray();
+            console.log(services);
             res.send(services);
         })
 
@@ -36,6 +38,13 @@ async function run(){
             res.send(service);
         })
 
+        // Add services api
+        app.post('/service',async(req,res)=>{
+            const service = req.body;
+            const result = await serviceCollection.insertOne(service);
+            res.send(result);
+        })
+        
         app.get('/service/:id', async(req,res)=>{
             const id = req.params.id;
             const query = { _id: ObjectId(id)};
@@ -86,6 +95,14 @@ async function run(){
             const query = { _id: ObjectId(id)};
             const result = await reviewCollection.deleteOne(query);
             res.send(result);
+        })
+
+        // blog api
+        app.get('/blogs',async(req,res)=>{
+            const query = {};
+            const cursor = blogCollection.find(query);
+            const blogs = await cursor.toArray();
+            res.send(blogs);
         })
     }
     finally{
